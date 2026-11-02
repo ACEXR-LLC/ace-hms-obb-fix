@@ -9,7 +9,8 @@ It talks to the headset over WebUSB using [Tango](https://tangoadb.dev), a TypeS
 ## Files
 
 - `index.html`, `styles.css` — the page, dark Ace theme matching the desktop app
-- `app.js` — WebUSB connection, authentication and the step-by-step UI
+- `app.js` — device picking, authentication and the step-by-step UI
+- `usbConnection.js` — the USB transport: a buffered adb packet reader and writer over WebUSB. Tango's own WebUSB connection keeps a read only when it is exactly a 24-byte header, but the Quest returns the header and its payload in one read, so Tango never sees the headset's first reply. This transport buffers, drops leftover packets from an earlier session, and feeds Tango's `AdbDaemonTransport.authenticate`.
 - `headset.js` — the diagnosis and repair logic, a line-for-line port of the desktop app's `HeadsetFixer.cs`, `Headset/ObbRepair.cs` and `Headset/LaunchVerifier.cs`
 - `text.js` — every sentence shown to the user
 - `logo-white.png` — the Ace wordmark

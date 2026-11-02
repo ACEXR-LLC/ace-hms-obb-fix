@@ -1,8 +1,9 @@
 import { Adb, AdbDaemonTransport } from "https://esm.sh/@yume-chan/adb@2.6.4";
-import { AdbDaemonWebUsbDevice, AdbDaemonWebUsbDeviceManager } from "https://esm.sh/@yume-chan/adb-daemon-webusb@2.3.2?deps=@yume-chan/adb@2.6.4";
+import { AdbDaemonWebUsbDeviceManager } from "https://esm.sh/@yume-chan/adb-daemon-webusb@2.3.2?deps=@yume-chan/adb@2.6.4";
 import AdbWebCredentialStore from "https://esm.sh/@yume-chan/adb-credential-web@2.1.0?deps=@yume-chan/adb@2.6.4";
 import { expectedFileName, inspectContent, inspectPackage, launchAndWatch, repairContentFile, sizeText } from "./headset.js";
 import { text } from "./text.js";
+import { DeviceBusyError, openAdbConnection } from "./usbConnection.js";
 
 const fixButton = document.getElementById("fix");
 const results = document.getElementById("results");
@@ -96,12 +97,24 @@ async function connectHeadset() {
   report("passed", `Picked ${describeDevice(device)}.`);
 
   report("working", "Opening the connection…");
-  logRawTransfers(device.raw);
+  const traffic = { sent: [], received: [], stale: 0 };
+  const trafficLine = report("info", "Headset traffic: none yet");
+  const updateTraffic = () => {
+    const stale = traffic.stale ? `, skipped ${traffic.stale} leftover` : "";
+    trafficLine.textContent = `Headset traffic: sent ${traffic.sent.join(", ") || "nothing"}; received ${traffic.received.join(", ") || "none yet"}${stale}`;
+  };
+  const events = {
+    onSent: (name) => { traffic.sent.push(name); console.log("→ headset", name); updateTraffic(); },
+    onReceived: (name) => { traffic.received.push(name); console.log("headset →", name); updateTraffic(); },
+    onStale: (name) => { traffic.stale++; console.log("headset → (leftover)", name); updateTraffic(); },
+    onNoise: () => { traffic.stale++; updateTraffic(); },
+  };
   let connection;
   try {
-    connection = await device.connect();
+    connection = await openAdbConnection(device.raw, events);
+    console.log("connected on", connection.description);
   } catch (error) {
-    if (error instanceof AdbDaemonWebUsbDevice.DeviceBusyError) {
+    if (error instanceof DeviceBusyError) {
       report("failed", text.deviceBusy);
     } else {
       report("failed", text.connectFailed, `${error?.name ?? ""} ${error?.message ?? error}`.trim());
@@ -109,7 +122,7 @@ async function connectHeadset() {
     return undefined;
   }
 
-  const transport = await authenticateWithHints(device, connection);
+  const transport = await authenticateWithHints(device, connection, traffic);
   if (!transport) {
     return undefined;
   }
@@ -117,66 +130,29 @@ async function connectHeadset() {
   return new Adb(transport);
 }
 
-const commandNames = { 0x4e584e43: "CNXN", 0x48545541: "AUTH", 0x4e45504f: "OPEN", 0x59414b4f: "OKAY", 0x45534c43: "CLSE", 0x45545257: "WRTE" };
-
-async function authenticateWithHints(device, connection) {
-  let packets = 0;
-  let authRequests = 0;
+async function authenticateWithHints(device, connection, traffic) {
   let promptShown = false;
-  const trace = [];
-  let sent = 0;
-  const traceLine = report("info", "Headset traffic: none yet");
-  const updateTrace = () => {
-    traceLine.textContent = `Headset traffic: sent ${sent}, received ${trace.length ? trace.join(", ") : "none yet"} (${describeInterfaces(device)})`;
-  };
-  const observed = {
-    writable: new WritableStream({
-      async write(chunk) {
-        sent++;
-        console.log("→ headset", commandNames[chunk.value?.command] ?? chunk.value?.command);
-        updateTrace();
-        const writer = connection.writable.getWriter();
-        try {
-          await writer.write(chunk);
-        } finally {
-          writer.releaseLock();
-        }
-      },
-      close() {
-        return connection.writable.close();
-      },
-    }),
-    readable: connection.readable.pipeThrough(new TransformStream({
-      transform(packet, controller) {
-        packets++;
-        const name = commandNames[packet.command] ?? packet.command.toString(16);
-        console.log("headset →", name);
-        trace.push(name);
-        updateTrace();
-        if (name === "AUTH") {
-          authRequests++;
-        }
-        if (authRequests >= 2 && !promptShown) {
-          promptShown = true;
-          report("instruction", text.allowPrompt);
-        }
-        controller.enqueue(packet);
-      },
-    })),
-  };
-
+  const watcher = setInterval(() => {
+    const authRequests = traffic.received.filter((name) => name === "AUTH").length;
+    if (authRequests >= 2 && !promptShown) {
+      promptShown = true;
+      report("instruction", text.allowPrompt);
+    }
+  }, 500);
   const silentTimer = setTimeout(() => {
-    if (packets === 0) {
+    if (traffic.received.length === 0) {
       report("instruction", text.headsetSilent);
     }
   }, 10_000);
   const stillWaitingTimer = setTimeout(() => report("info", text.stillWaitingForAllow), 45_000);
   try {
-    return await AdbDaemonTransport.authenticate({ serial: device.serial, connection: observed, credentialStore });
+    return await AdbDaemonTransport.authenticate({ serial: device.serial, connection, credentialStore });
   } catch (error) {
     report("failed", text.authenticateFailed, `${error?.name ?? ""} ${error?.message ?? error}`.trim());
+    await connection.close();
     return undefined;
   } finally {
+    clearInterval(watcher);
     clearTimeout(silentTimer);
     clearTimeout(stillWaitingTimer);
   }
@@ -188,59 +164,6 @@ async function pickDevice(manager) {
     return remembered[0];
   }
   return manager.requestDevice();
-}
-
-function logRawTransfers(usbDevice) {
-  if (!usbDevice || usbDevice.__aceLogged) {
-    return;
-  }
-  usbDevice.__aceLogged = true;
-  for (const method of ["open", "selectConfiguration", "claimInterface", "selectAlternateInterface", "transferIn", "transferOut", "clearHalt", "reset", "close"]) {
-    const original = usbDevice[method]?.bind(usbDevice);
-    if (!original) {
-      continue;
-    }
-    usbDevice[method] = async (...args) => {
-      const label = `usb.${method}(${args.map(describeArgument).join(", ")})`;
-      try {
-        const result = await original(...args);
-        console.log(label, "→", describeResult(result));
-        return result;
-      } catch (error) {
-        console.error(label, "✖", error?.name, error?.message);
-        throw error;
-      }
-    };
-  }
-}
-
-function describeArgument(argument) {
-  if (argument instanceof ArrayBuffer || ArrayBuffer.isView(argument)) {
-    return `${argument.byteLength} bytes`;
-  }
-  return String(argument);
-}
-
-function describeResult(result) {
-  if (result && typeof result === "object" && "status" in result) {
-    const length = result.data?.byteLength ?? result.bytesWritten ?? "";
-    return `${result.status} ${length}`;
-  }
-  return result === undefined ? "ok" : String(result);
-}
-
-function describeInterfaces(device) {
-  const raw = device.raw;
-  if (!raw?.configuration) {
-    return "no USB configuration";
-  }
-  return raw.configuration.interfaces
-    .map((usbInterface) => {
-      const alternate = usbInterface.alternate;
-      const endpoints = alternate.endpoints.map((endpoint) => `${endpoint.direction === "in" ? "in" : "out"}${endpoint.endpointNumber}`).join("/");
-      return `#${usbInterface.interfaceNumber} ${alternate.interfaceClass}.${alternate.interfaceSubclass}.${alternate.interfaceProtocol} ${endpoints}${usbInterface.claimed ? " claimed" : ""}`;
-    })
-    .join("; ");
 }
 
 function describeDevice(device) {
