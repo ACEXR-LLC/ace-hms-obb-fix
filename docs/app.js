@@ -123,15 +123,35 @@ async function authenticateWithHints(device, connection) {
   let authRequests = 0;
   let promptShown = false;
   const trace = [];
+  let sent = 0;
   const traceLine = report("info", "Headset traffic: none yet");
+  const updateTrace = () => {
+    traceLine.textContent = `Headset traffic: sent ${sent}, received ${trace.length ? trace.join(", ") : "none yet"} (${describeInterfaces(device)})`;
+  };
   const observed = {
+    writable: new WritableStream({
+      async write(chunk) {
+        sent++;
+        console.log("→ headset", commandNames[chunk.value?.command] ?? chunk.value?.command);
+        updateTrace();
+        const writer = connection.writable.getWriter();
+        try {
+          await writer.write(chunk);
+        } finally {
+          writer.releaseLock();
+        }
+      },
+      close() {
+        return connection.writable.close();
+      },
+    }),
     readable: connection.readable.pipeThrough(new TransformStream({
       transform(packet, controller) {
         packets++;
         const name = commandNames[packet.command] ?? packet.command.toString(16);
         console.log("headset →", name);
         trace.push(name);
-        traceLine.textContent = `Headset traffic: ${trace.join(", ")}`;
+        updateTrace();
         if (name === "AUTH") {
           authRequests++;
         }
@@ -142,7 +162,6 @@ async function authenticateWithHints(device, connection) {
         controller.enqueue(packet);
       },
     })),
-    writable: connection.writable,
   };
 
   const silentTimer = setTimeout(() => {
@@ -168,6 +187,20 @@ async function pickDevice(manager) {
     return remembered[0];
   }
   return manager.requestDevice();
+}
+
+function describeInterfaces(device) {
+  const raw = device.raw;
+  if (!raw?.configuration) {
+    return "no USB configuration";
+  }
+  return raw.configuration.interfaces
+    .map((usbInterface) => {
+      const alternate = usbInterface.alternate;
+      const endpoints = alternate.endpoints.map((endpoint) => `${endpoint.direction === "in" ? "in" : "out"}${endpoint.endpointNumber}`).join("/");
+      return `#${usbInterface.interfaceNumber} ${alternate.interfaceClass}.${alternate.interfaceSubclass}.${alternate.interfaceProtocol} ${endpoints}${usbInterface.claimed ? " claimed" : ""}`;
+    })
+    .join("; ");
 }
 
 function describeDevice(device) {
