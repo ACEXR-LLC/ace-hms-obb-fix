@@ -22,7 +22,8 @@ export const text = {
 
   deviceBusy:
     "Another program on this computer is already talking to the headset (for example Meta Quest Developer Hub, SideQuest, " +
-    "Meta Quest Link, or a command-line adb). Close it, unplug and replug the headset, then click the button again.",
+    "Meta Quest Link, Unity, or a command-line adb). Close it, unplug and replug the headset, then click the button again. " +
+    "If you have Android developer tools installed, run \"adb kill-server\" in a terminal first; the adb server keeps running after the program that started it closes.",
 
   connectFailed:
     "Couldn't open a connection to the headset. On Windows this usually means the headset's ADB driver isn't the standard " +
