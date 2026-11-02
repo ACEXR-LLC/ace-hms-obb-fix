@@ -1,0 +1,27 @@
+name: Release desktop app
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Test
+        run: dotnet test desktop/tests/AceHeadsetFix.Tests --filter "Category!=Network"
+      - name: Publish
+        run: desktop/publish.ps1
+        shell: pwsh
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: desktop/publish/AceHeadsetFix.exe

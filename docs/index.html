@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ace Headset Fix</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="logo-white.png" alt="Ace">
+      <h1>Headset Fix</h1>
+    </header>
+    <p class="intro">
+      Use this when Ace stays stuck on Meta's three loading dots after Device Manager installed it.
+      Plug the headset into this computer with a USB cable, make sure the headset is switched on, then click the button
+      and pick the headset in the list that pops up. If the headset needs something from you, instructions appear below.
+    </p>
+    <button id="fix" class="primary" type="button">Connect and fix my headset</button>
+    <section id="results" class="card results" aria-live="polite">
+      <p class="placeholder">Results will appear here.</p>
+    </section>
+    <footer>
+      <button id="copy" class="secondary" type="button">Copy results</button>
+      <span class="spacer"></span>
+      <button id="about" class="secondary" type="button">About</button>
+    </footer>
+  </main>
+
+  <dialog id="about-dialog">
+    <h2>Why does this happen?</h2>
+    <p id="why"></p>
+    <footer>
+      <span class="version">Ace Headset Fix (web) 1.0.0</span>
+      <button id="close-about" class="secondary" type="button">Close</button>
+    </footer>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
