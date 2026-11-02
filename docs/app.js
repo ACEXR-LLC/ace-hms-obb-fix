@@ -96,6 +96,7 @@ async function connectHeadset() {
   report("passed", `Picked ${describeDevice(device)}.`);
 
   report("working", "Opening the connection…");
+  logRawTransfers(device.raw);
   let connection;
   try {
     connection = await device.connect();
@@ -187,6 +188,45 @@ async function pickDevice(manager) {
     return remembered[0];
   }
   return manager.requestDevice();
+}
+
+function logRawTransfers(usbDevice) {
+  if (!usbDevice || usbDevice.__aceLogged) {
+    return;
+  }
+  usbDevice.__aceLogged = true;
+  for (const method of ["open", "selectConfiguration", "claimInterface", "selectAlternateInterface", "transferIn", "transferOut", "clearHalt", "reset", "close"]) {
+    const original = usbDevice[method]?.bind(usbDevice);
+    if (!original) {
+      continue;
+    }
+    usbDevice[method] = async (...args) => {
+      const label = `usb.${method}(${args.map(describeArgument).join(", ")})`;
+      try {
+        const result = await original(...args);
+        console.log(label, "→", describeResult(result));
+        return result;
+      } catch (error) {
+        console.error(label, "✖", error?.name, error?.message);
+        throw error;
+      }
+    };
+  }
+}
+
+function describeArgument(argument) {
+  if (argument instanceof ArrayBuffer || ArrayBuffer.isView(argument)) {
+    return `${argument.byteLength} bytes`;
+  }
+  return String(argument);
+}
+
+function describeResult(result) {
+  if (result && typeof result === "object" && "status" in result) {
+    const length = result.data?.byteLength ?? result.bytesWritten ?? "";
+    return `${result.status} ${length}`;
+  }
+  return result === undefined ? "ok" : String(result);
 }
 
 function describeInterfaces(device) {
