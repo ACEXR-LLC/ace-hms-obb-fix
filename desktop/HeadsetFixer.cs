@@ -84,7 +84,8 @@ public sealed class HeadsetFixer
             var ready = devices.Where(device => device.State == AdbDeviceState.Ready).ToList();
             if (ready.Count > 0)
             {
-                Report(StepOutcome.Passed, $"Found {ready.Count} headset{(ready.Count == 1 ? string.Empty : "s")}: {string.Join(", ", ready.Select(device => device.DisplayName))}");
+                _log.Write("ready: " + string.Join(", ", ready.Select(device => device.DisplayName)));
+                Report(StepOutcome.Passed, ready.Count == 1 ? $"Found your {ready[0].Model}." : $"Found {ready.Count} headsets.");
                 return ready;
             }
 
@@ -130,7 +131,7 @@ public sealed class HeadsetFixer
 
     async Task FixHeadsetAsync(AdbRunner adb, AdbDevice headset, FixSummary summary)
     {
-        Report(StepOutcome.Working, $"Checking Ace on {headset.DisplayName}…");
+        Report(StepOutcome.Working, "Checking Ace on the headset…");
         var package = await AcePackageInspector.InspectAsync(adb, headset.Serial).ConfigureAwait(false);
         if (!package.Installed)
         {
@@ -148,13 +149,15 @@ public sealed class HeadsetFixer
                 await HandleMissingContentFileAsync(adb, headset, package, content, summary).ConfigureAwait(false);
                 return;
             case ContentFileState.Readable:
-                Report(StepOutcome.Passed, Explanations.AlreadyReadable, DescribeEntries(package, content.Entries));
+                _log.Write(DescribeEntries(package, content.Entries));
+                Report(StepOutcome.Passed, Explanations.AlreadyReadable);
                 await ConfirmLaunchAsync(adb, headset, summary, fixedJustNow: false).ConfigureAwait(false);
                 return;
         }
 
         var contentFile = content.ContentFile!;
-        Report(StepOutcome.Info, $"Found the problem: the content file belongs to '{contentFile.Owner}' with permissions {contentFile.Mode}, so Ace (which runs as '{package.AppUser}') can't read it.");
+        _log.Write($"content file owner {contentFile.Owner} mode {contentFile.Mode}; Ace runs as {package.AppUser}");
+        Report(StepOutcome.Info, Explanations.FoundTheProblem);
         var repair = await new ObbRepair(adb, _status).RepairAsync(headset.Serial, contentFile).ConfigureAwait(false);
         if (!repair.Succeeded)
         {
@@ -162,13 +165,15 @@ public sealed class HeadsetFixer
             summary.Problems++;
             return;
         }
-        Report(StepOutcome.Passed, "Fixed. Ace can now read its content file.", repair.Message);
+        _log.Write(repair.Message);
+        Report(StepOutcome.Passed, "Fixed. Ace can read its content file again.");
         await ConfirmLaunchAsync(adb, headset, summary, fixedJustNow: true).ConfigureAwait(false);
     }
 
     async Task HandleMissingContentFileAsync(AdbRunner adb, AdbDevice headset, AcePackageInfo package, ContentFileReport content, FixSummary summary)
     {
-        Report(StepOutcome.Info, "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…", DescribeEntries(package, content.Entries));
+        _log.Write(DescribeEntries(package, content.Entries));
+        Report(StepOutcome.Info, "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…");
         var launch = await new LaunchVerifier(adb).LaunchAndWatchAsync(headset.Serial).ConfigureAwait(false);
         if (launch.Outcome == LaunchOutcome.ReachedVr)
         {
@@ -198,7 +203,8 @@ public sealed class HeadsetFixer
                 summary.Problems++;
                 return;
             default:
-                Report(StepOutcome.Info, Explanations.LaunchUndetermined, launch.Detail);
+                _log.Write(launch.Detail);
+                Report(StepOutcome.Info, Explanations.LaunchUndetermined);
                 if (fixedJustNow)
                     summary.Fixed++;
                 else

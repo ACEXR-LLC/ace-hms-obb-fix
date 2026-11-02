@@ -44,6 +44,9 @@ export const text = {
   authenticateFailed:
     "The headset refused or dropped the connection. Unplug and replug the cable, reload this page and try again.",
 
+  foundTheProblem:
+    "Found the problem: the headset saved Ace's content file without giving Ace permission to read it.",
+
   aceNotInstalled:
     "Ace isn't installed on this headset. Install it from Device Manager (or the Meta Store) first, then try again.",
 

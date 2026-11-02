@@ -33,17 +33,17 @@ public sealed class ObbRepair
         if (freeBytes < contentFile.Size + FreeSpaceMargin)
             return new RepairResult(false, $"The headset needs {contentFile.SizeText} of free space to make the fix and only has {freeBytes / 1_000_000_000d:F1} GB. Free up some space on the headset and try again.");
 
-        _status.Report(new StatusLine(StepOutcome.Working, $"Making a copy of the content file that Ace is allowed to read ({contentFile.SizeText}). This usually takes under a minute…"));
+        _status.Report(new StatusLine(StepOutcome.Working, $"Making a copy of the content file that Ace can read ({contentFile.SizeText}). This takes about a minute…"));
         var copyResult = await _adb.ShellAsync(serial, $"cp {original} {copy} && chmod 666 {copy}", LargeFileTimeout).ConfigureAwait(false);
         if (!copyResult.Succeeded)
             return await AbandonAsync(serial, copy, $"Couldn't make the copy. The headset said: {copyResult.CombinedOutput}").ConfigureAwait(false);
 
-        _status.Report(new StatusLine(StepOutcome.Working, "Checking the copy is identical to the original…"));
+        _status.Report(new StatusLine(StepOutcome.Working, "Checking the copy…"));
         var checksumResult = await _adb.ShellAsync(serial, $"md5sum {original} {copy}", LargeFileTimeout).ConfigureAwait(false);
         if (!checksumResult.Succeeded || !ChecksumsMatch(checksumResult.StandardOutput))
             return await AbandonAsync(serial, copy, $"The copy didn't match the original, so it was thrown away. The headset said: {checksumResult.CombinedOutput}").ConfigureAwait(false);
 
-        _status.Report(new StatusLine(StepOutcome.Working, "Putting the readable copy in place of the original…"));
+        _status.Report(new StatusLine(StepOutcome.Working, "Swapping the copy into place…"));
         var swapResult = await _adb.ShellAsync(serial, $"mv {original} {retired} && mv {copy} {original} && rm -f {retired}", TimeSpan.FromMinutes(5)).ConfigureAwait(false);
         if (!swapResult.Succeeded)
         {

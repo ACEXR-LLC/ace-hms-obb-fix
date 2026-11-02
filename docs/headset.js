@@ -106,21 +106,21 @@ export async function repairContentFile(shell, contentFile, report) {
     return { succeeded: false, message: `The headset needs ${sizeText(contentFile.size)} of free space to make the fix and only has ${sizeText(freeBytes)}. Free up some space on the headset and try again.` };
   }
 
-  report("working", `Making a copy of the content file that Ace is allowed to read (${sizeText(contentFile.size)}). This usually takes under a minute…`);
+  report("working", `Making a copy of the content file that Ace can read (${sizeText(contentFile.size)}). This takes about a minute…`);
   const copyResult = await shell(`cp ${original} ${copy} && chmod 666 ${copy}`);
   if (copyResult.exitCode !== 0) {
     await shell(`rm -f ${copy}`);
     return { succeeded: false, message: `Couldn't make the copy. The headset said: ${combined(copyResult)}` };
   }
 
-  report("working", "Checking the copy is identical to the original…");
+  report("working", "Checking the copy…");
   const checksumResult = await shell(`md5sum ${original} ${copy}`);
   if (checksumResult.exitCode !== 0 || !checksumsMatch(checksumResult.stdout)) {
     await shell(`rm -f ${copy}`);
     return { succeeded: false, message: `The copy didn't match the original, so it was thrown away. The headset said: ${combined(checksumResult)}` };
   }
 
-  report("working", "Putting the readable copy in place of the original…");
+  report("working", "Swapping the copy into place…");
   const swapResult = await shell(`mv ${original} ${retired} && mv ${copy} ${original} && rm -f ${retired}`);
   if (swapResult.exitCode !== 0) {
     await shell(`[ -e ${original} ] || mv ${retired} ${original}`);

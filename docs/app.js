@@ -79,13 +79,13 @@ async function runFix() {
 }
 
 async function connectHeadset() {
-  report("working", "Checking this browser can talk to USB devices…");
+  report("working", "Checking this browser…");
   const manager = AdbDaemonWebUsbDeviceManager.BROWSER;
   if (!manager) {
     report("failed", text.browserUnsupported);
     return undefined;
   }
-  report("passed", "This browser can talk to USB devices.");
+  report("passed", "This browser can talk to the headset.");
 
   report("working", "Asking you to pick the headset…");
   const device = await pickDevice(manager);
@@ -94,20 +94,16 @@ async function connectHeadset() {
     report("info", text.debuggingOffHint);
     return undefined;
   }
-  report("passed", `Picked ${describeDevice(device)}.`);
+  console.log("picked", describeDevice(device));
+  report("passed", `Found your ${device.raw?.productName || "headset"}.`);
 
-  report("working", "Opening the connection…");
+  report("working", "Connecting to the headset…");
   const traffic = { sent: [], received: [], stale: 0 };
-  const trafficLine = report("info", "Headset traffic: none yet");
-  const updateTraffic = () => {
-    const stale = traffic.stale ? `, skipped ${traffic.stale} leftover` : "";
-    trafficLine.textContent = `Headset traffic: sent ${traffic.sent.join(", ") || "nothing"}; received ${traffic.received.join(", ") || "none yet"}${stale}`;
-  };
   const events = {
-    onSent: (name) => { traffic.sent.push(name); console.log("→ headset", name); updateTraffic(); },
-    onReceived: (name) => { traffic.received.push(name); console.log("headset →", name); updateTraffic(); },
-    onStale: (name) => { traffic.stale++; console.log("headset → (leftover)", name); updateTraffic(); },
-    onNoise: () => { traffic.stale++; updateTraffic(); },
+    onSent: (name) => { traffic.sent.push(name); console.log("→ headset", name); },
+    onReceived: (name) => { traffic.received.push(name); console.log("headset →", name); },
+    onStale: (name) => { traffic.stale++; console.log("headset → (leftover)", name); },
+    onNoise: () => { traffic.stale++; },
   };
   let connection;
   try {
@@ -126,7 +122,7 @@ async function connectHeadset() {
   if (!transport) {
     return undefined;
   }
-  report("passed", "The headset trusts this computer.");
+  report("passed", "Connected to the headset.");
   return new Adb(transport);
 }
 
@@ -185,7 +181,8 @@ async function fixHeadset(adb, summary) {
   report("working", "Checking Ace's content file…");
   const content = await inspectContent(shell, pkg);
   if (content.state === "not-downloaded") {
-    report("info", "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…", describeEntries(pkg, content.entries));
+    console.log(describeEntries(pkg, content.entries));
+    report("info", "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…");
     const launch = await launchAndWatch(shell);
     if (launch.outcome === "reached-vr") {
       report("passed", "Ace started and reached VR without a separate content file. Nothing to fix on this headset.");
@@ -197,20 +194,23 @@ async function fixHeadset(adb, summary) {
     return;
   }
   if (content.state === "readable") {
-    report("passed", text.alreadyReadable, describeEntries(pkg, content.entries));
+    console.log(describeEntries(pkg, content.entries));
+    report("passed", text.alreadyReadable);
     await confirmLaunch(shell, summary, false);
     return;
   }
 
   const file = content.contentFile;
-  report("info", `Found the problem: the content file belongs to '${file.owner}' with permissions ${file.mode}, so Ace (which runs as '${pkg.appUser}') can't read it.`);
+  console.log(`content file owner ${file.owner} mode ${file.mode}; Ace runs as ${pkg.appUser}`);
+  report("info", text.foundTheProblem);
   const repair = await repairContentFile(shell, file, report);
   if (!repair.succeeded) {
     report("failed", repair.message);
     summary.problems++;
     return;
   }
-  report("passed", "Fixed. Ace can now read its content file.", repair.message);
+  console.log(repair.message);
+  report("passed", "Fixed. Ace can read its content file again.");
   await confirmLaunch(shell, summary, true);
 }
 
@@ -224,7 +224,8 @@ async function confirmLaunch(shell, summary, fixedJustNow) {
     summary.problems++;
     return;
   } else {
-    report("info", text.launchUndetermined, launch.detail);
+    console.log(launch.detail);
+    report("info", text.launchUndetermined);
   }
   if (fixedJustNow) {
     summary.fixed++;

@@ -50,6 +50,9 @@ public static class Explanations
     public const string GaveUpWaiting =
         "Gave up waiting for the headset. Sort out the point above, then click the button again.";
 
+    public const string FoundTheProblem =
+        "Found the problem: the headset saved Ace's content file without giving Ace permission to read it.";
+
     public const string AceNotInstalled =
         "Ace isn't installed on this headset. Install it from Device Manager (or the Meta Store) first, then run this tool again.";
 
