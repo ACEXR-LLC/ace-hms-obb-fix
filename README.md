@@ -18,8 +18,15 @@ Device Manager downloads Ace's 2.8 GB expansion file correctly but leaves it own
 
 ## Web page
 
-`docs/` is a static site served by GitHub Pages from the `main` branch's `/docs` folder at https://acexr-llc.github.io/ace-hms-obb-fix/. See [docs/README.md](docs/README.md) for hosting and user steps.
+`docs/` is a static site at https://acexr-llc.github.io/ace-hms-obb-fix/. See [docs/README.md](docs/README.md) for hosting and user steps.
 
 ## Windows app
 
-`desktop/` is a .NET 8 WinForms app. `desktop\publish.ps1` builds a single self-contained `AceHeadsetFix.exe`; tagged releases build it automatically and attach it to the GitHub release. See [desktop/README.md](desktop/README.md).
+`desktop/` is a .NET 8 WinForms app. `desktop\publish.ps1` builds a single self-contained `AceHeadsetFix.exe`. See [desktop/README.md](desktop/README.md).
+
+## Deployments
+
+There are two, both from GitHub Actions:
+
+- **Site and app** (`deploy.yml`): every push to `main` builds the exe, places it next to the site and publishes both to GitHub Pages. The exe download link on the page points at that copy, so it works for anyone even though the repository is private. Pages must be set to the **GitHub Actions** source.
+- **Versioned release** (`release.yml`): pushing a `v*` tag builds the exe and attaches it to a GitHub release for the record. Release assets on a private repository are only downloadable by people with access to it.

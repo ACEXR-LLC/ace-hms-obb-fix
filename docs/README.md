@@ -1,6 +1,8 @@
 # Ace Headset Fix (web)
 
-A browser version of `Tools/AceHeadsetFix`. It repairs the same problem, a Quest stuck on Meta's three loading dots after a Device Manager (Horizon Managed Services, shared mode) install left Ace's expansion file unreadable, but it runs as a web page: nothing to download, no SmartScreen warning, and it works on Windows, macOS, Linux and ChromeOS.
+A browser version of `../desktop`. It repairs the same problem, a Quest stuck on Meta's three loading dots after a Device Manager (Horizon Managed Services, shared mode) install left Ace's expansion file unreadable, but it runs as a web page: nothing to download, no SmartScreen warning, and it works on Windows, macOS, Linux and ChromeOS.
+
+Live at https://acexr-llc.github.io/ace-hms-obb-fix/. The page also links to the Windows app, which the deploy workflow builds and publishes alongside it as `AceHeadsetFix.exe`.
 
 It talks to the headset over WebUSB using [Tango](https://tangoadb.dev), a TypeScript implementation of the adb protocol, so no adb binary is involved.
 
@@ -8,21 +10,21 @@ It talks to the headset over WebUSB using [Tango](https://tangoadb.dev), a TypeS
 
 - `index.html`, `styles.css` — the page, dark Ace theme matching the desktop app
 - `app.js` — WebUSB connection, authentication and the step-by-step UI
-- `headset.js` — the diagnosis and repair logic, a line-for-line port of `Tools/AceHeadsetFix/HeadsetFixer.cs`, `Headset/ObbRepair.cs` and `Headset/LaunchVerifier.cs`
+- `headset.js` — the diagnosis and repair logic, a line-for-line port of the desktop app's `HeadsetFixer.cs`, `Headset/ObbRepair.cs` and `Headset/LaunchVerifier.cs`
 - `text.js` — every sentence shown to the user
-- `logo-white.png` — the Ace wordmark (stored in Git LFS)
+- `logo-white.png` — the Ace wordmark
 
 Tango is loaded from esm.sh at pinned versions (`@yume-chan/adb@2.6.4`, `@yume-chan/adb-daemon-webusb@2.3.2`, `@yume-chan/adb-credential-web@2.1.0`). There is no build step.
 
-## Hosting
+## Deployment
 
-Any static host works, but the page must be served over HTTPS (or `localhost` for testing) because WebUSB only runs in a secure context. Copy the folder to the host as-is. For a quick local test:
+`.github/workflows/deploy.yml` runs on every push to `main`: it builds the Windows app, drops `AceHeadsetFix.exe` into this folder, and publishes the folder to GitHub Pages. The repository's Pages source must be set to **GitHub Actions**. The exe never enters git.
+
+To try changes before pushing, serve this folder locally; WebUSB needs HTTPS or `localhost`:
 
 ```powershell
 python -m http.server 8765 --bind 127.0.0.1
 ```
-
-then open `http://127.0.0.1:8765/`.
 
 ## What the user does
 
@@ -35,6 +37,6 @@ then open `http://127.0.0.1:8765/`.
 
 ## Known limits
 
-- Only one program can hold the headset's ADB interface at a time. Meta Quest Developer Hub, Meta Quest Link, SideQuest or a running `adb` server on the same computer block the page; the page explains this when it happens.
+- Only one program can hold the headset's ADB interface at a time. Meta Quest Developer Hub, Meta Quest Link, SideQuest, the Unity Editor or a running `adb` server on the same computer block the page; the page explains this when it happens.
 - On Windows the headset's ADB interface must be bound to a WinUSB-based driver. Meta's own ADB driver and the generic driver Windows installs for Android devices both are.
 - The adb key the page generates lives in the browser's IndexedDB for this site; clearing site data means the headset will ask "Allow USB debugging?" again.
