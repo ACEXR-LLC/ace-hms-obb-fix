@@ -18,7 +18,7 @@ Device Manager downloads Ace's 2.8 GB expansion file correctly but leaves it own
 
 ## Web page
 
-`docs/` is a static site served by GitHub Pages. See [docs/README.md](docs/README.md) for hosting and user steps.
+`docs/` is a static site served by GitHub Pages from the `main` branch's `/docs` folder at https://acexr-llc.github.io/ace-hms-obb-fix/. See [docs/README.md](docs/README.md) for hosting and user steps.
 
 ## Windows app
 
