@@ -32,9 +32,8 @@ public static class Explanations
 
     public const string WaitingDebuggingOff =
         "The headset is plugged in, but USB debugging is switched off, so this computer isn't allowed to talk to it. " +
-        "On the headset go to Settings > Advanced > USB Debugging and turn it on. If it asks for an admin passcode, use your " +
-        "Device Manager admin passcode (the default is 5112). Device Manager switches USB debugging off again every time the headset " +
-        "restarts, so you may need to do this each time. Waiting…";
+        "On the headset go to Settings > Developer > USB Debugging and turn it on. Device Manager switches USB debugging off again every time the headset " +
+        "restarts, so you may need to do this each time. Click \"How to turn on USB debugging\" below for step-by-step pictures. Waiting…";
 
     public const string WaitingAdbBlind =
         "Windows sees the headset with USB debugging on, but the Android tool can't reach it yet. Restarting the tool… " +
@@ -45,7 +44,7 @@ public static class Explanations
         AdbDriverUrl + " (unzip it, right-click android_winusb.inf and choose Install), then click the button again.";
 
     public const string WaitingUnknown =
-        "Couldn't ask Windows which USB devices are connected. Check the cable and that USB debugging is on in the headset's Settings > Advanced. Waiting…";
+        "Couldn't ask Windows which USB devices are connected. Check the cable and that USB debugging is on in the headset's Settings > Developer. Waiting…";
 
     public const string GaveUpWaiting =
         "Gave up waiting for the headset. Sort out the point above, then click the button again.";

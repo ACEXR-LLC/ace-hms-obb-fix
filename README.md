@@ -10,7 +10,7 @@ Two ways to run it, same fix underneath:
 | Install | nothing, open the page | download one exe, click past SmartScreen |
 | Talks to the headset via | WebUSB (Tango, adb in the browser) | adb (downloaded automatically if missing) |
 
-Both need USB debugging switched on in the headset (Settings > Advanced > USB Debugging, Device Manager admin passcode) and the headset's "Allow USB debugging?" prompt accepted once.
+Both need USB debugging switched on in the headset (Settings > Developer > USB Debugging) and the headset's "Allow USB debugging?" prompt accepted once.
 
 ## What is wrong on the headset
 

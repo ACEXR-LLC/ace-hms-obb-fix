@@ -17,6 +17,10 @@
       Plug the headset into this computer with a USB cable, make sure the headset is switched on, then click the button
       and pick the headset in the list that pops up. If the headset needs something from you, instructions appear below.
     </p>
+    <p class="before">
+      <strong>Before you start:</strong> USB debugging has to be switched on in the headset.
+      <button id="guide" class="secondary inline" type="button">How to turn on USB debugging</button>
+    </p>
     <button id="fix" class="primary" type="button">Connect and fix my headset</button>
     <section id="results" class="card results" aria-live="polite">
       <p class="placeholder">Results will appear here.</p>
@@ -29,6 +33,63 @@
     </footer>
   </main>
 
+  <dialog id="guide-dialog" class="guide">
+    <h2>How to turn on USB debugging</h2>
+    <p>
+      Takes about a minute. You do this in the headset, so put it on. The headset forgets this setting every time it
+      restarts, so if the page can't find your headset later, check it again.
+    </p>
+    <ol class="steps">
+      <li>
+        <h3>Open the Meta menu</h3>
+        <p>Press the <strong>Meta button</strong> on the right controller (the flat oval button) to open the menu.</p>
+      </li>
+      <li>
+        <h3>Open Settings</h3>
+        <p>
+          Select the <strong>three dots (⋮)</strong> on the toolbar, then <strong>Settings</strong> in the top-right corner.
+          On some headsets the toolbar shows a gear icon labelled Settings instead; select that.
+        </p>
+      </li>
+      <li>
+        <h3>Go to Developer</h3>
+        <p>In the list on the left side of the Settings window, scroll down and select <strong>Developer</strong>.</p>
+      </li>
+      <li>
+        <h3>Switch USB Debugging on</h3>
+        <p>
+          Turn the <strong>USB Debugging</strong> switch on. It turns green when it is on.
+          You can also get there from the quick settings panel (the Wi-Fi and battery icons in the bottom-left of the
+          menu), which has a <strong>USB debugging</strong> tile.
+        </p>
+        <figure>
+          <img src="guide/quick-settings-usb-debugging.jpg" alt="The headset's quick settings panel with the USB debugging tile in the bottom-left" loading="lazy">
+          <figcaption>The quick settings panel. The USB debugging tile is in the bottom-left.</figcaption>
+        </figure>
+      </li>
+      <li>
+        <h3>Plug in and allow the computer</h3>
+        <p>
+          Plug the headset into this computer with a USB cable, then click <strong>Connect and fix my headset</strong> on this page.
+          The headset shows <strong>Allow USB debugging?</strong> Tick <strong>Always allow from this computer</strong> and select <strong>Allow</strong>.
+          This box only appears while you are wearing the headset.
+        </p>
+        <figure>
+          <img src="guide/allow-usb-debugging.jpg" alt="The headset's Allow USB debugging? box with Cancel, Always allow from this computer, and Allow buttons" loading="lazy">
+          <figcaption>Tick "Always allow from this computer", then "Allow".</figcaption>
+        </figure>
+      </li>
+    </ol>
+    <p class="credit">
+      Screenshots courtesy of <a href="https://help.arborxr.com/en/articles/10769343-enable-usb-debugging-on-horizon-managed-services-devices" target="_blank" rel="noopener">ArborXR's guide</a>.
+      The steps follow <a href="https://help.managexr.com/en/articles/13006370-how-to-enable-usb-debugging-on-a-mhms-shared-mode-device" target="_blank" rel="noopener">ManageXR's guide</a> for shared-mode headsets.
+    </p>
+    <footer>
+      <span class="version">Settings &gt; Developer &gt; USB Debugging</span>
+      <button id="close-guide" class="secondary" type="button">Close</button>
+    </footer>
+  </dialog>
+
   <dialog id="about-dialog">
     <h2>Why does this happen?</h2>
     <p id="why"></p>
@@ -38,7 +99,7 @@
       Windows shows "Windows protected your PC" the first time; click <strong>More info</strong>, then <strong>Run anyway</strong>.
     </p>
     <footer>
-      <span class="version">Ace Headset Fix (web) 1.0.0</span>
+      <span class="version">Ace Headset Fix (web) 1.1.0</span>
       <button id="close-about" class="secondary" type="button">Close</button>
     </footer>
   </dialog>

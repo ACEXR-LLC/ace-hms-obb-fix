@@ -241,8 +241,21 @@ public sealed class MainForm : Form
             Margin = new Padding(0),
         };
         aboutButton.Click += (_, _) => ShowAbout();
+        var guideButton = new RoundedButton
+        {
+            Text = "How to turn on USB debugging",
+            Fill = Theme.Secondary,
+            HoverFill = Theme.SecondaryHover,
+            PressedFill = Theme.SecondaryPressed,
+            Width = Scaled(230),
+            Height = Scaled(36),
+            CornerRadius = Scaled(8),
+            Margin = new Padding(Scaled(12), 0, 0, 0),
+        };
+        guideButton.Click += (_, _) => ShowGuide();
         var left = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, Margin = new Padding(0), Anchor = AnchorStyles.Left };
         left.Controls.Add(copyButton);
+        left.Controls.Add(guideButton);
         left.Controls.Add(_logLink);
         var footer = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, ColumnCount = 2 };
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
@@ -250,6 +263,12 @@ public sealed class MainForm : Form
         footer.Controls.Add(left, 0, 0);
         footer.Controls.Add(aboutButton, 1, 0);
         return footer;
+    }
+
+    void ShowGuide()
+    {
+        using var guide = new GuideDialog(Icon);
+        guide.ShowDialog(this);
     }
 
     void ShowAbout()

@@ -234,3 +234,116 @@ dialog .version {
 dialog footer {
   justify-content: space-between;
 }
+
+.before {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 0 14px;
+  color: var(--info);
+}
+
+.secondary.inline {
+  padding: 7px 14px;
+}
+
+.show-how {
+  margin-top: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--link);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--link);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.show-how:hover {
+  background: rgba(90, 176, 255, 0.12);
+}
+
+dialog.guide {
+  max-width: 720px;
+  width: calc(100% - 32px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+}
+
+dialog.guide > p:first-of-type {
+  margin-top: 0;
+}
+
+.steps {
+  padding-left: 0;
+  margin: 18px 0;
+  counter-reset: step;
+  list-style: none;
+}
+
+.steps li {
+  position: relative;
+  padding-left: 44px;
+  margin-bottom: 20px;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.steps h3 {
+  margin: 4px 0 6px;
+  font-size: 17px;
+}
+
+.steps p {
+  margin: 0;
+}
+
+.steps figure {
+  margin: 12px 0 0;
+}
+
+.steps img {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+
+.steps figcaption {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.credit {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  dialog {
+    padding: 18px 16px;
+  }
+
+  .steps li {
+    padding-left: 38px;
+  }
+}

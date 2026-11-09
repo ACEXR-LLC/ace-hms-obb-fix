@@ -16,9 +16,8 @@ export const text = {
 
   debuggingOffHint:
     "If the list was empty: check the cable is firmly in both ends and carries data (the one from the Quest box does), " +
-    "and that USB debugging is on in the headset. On the headset go to Settings > Advanced > USB Debugging and turn it on. " +
-    "If it asks for an admin passcode, use your Device Manager admin passcode (the default is 5112). Device Manager " +
-    "switches USB debugging off again every time the headset restarts.",
+    "and that USB debugging is on in the headset. On the headset go to Settings > Developer > USB Debugging and turn it on. " +
+    "Device Manager switches USB debugging off again every time the headset restarts. Step-by-step pictures:",
 
   deviceBusy:
     "Another program on this computer is already talking to the headset (for example Meta Quest Developer Hub, SideQuest, " +

@@ -11,6 +11,9 @@ const copyButton = document.getElementById("copy");
 const aboutButton = document.getElementById("about");
 const aboutDialog = document.getElementById("about-dialog");
 const closeAbout = document.getElementById("close-about");
+const guideButton = document.getElementById("guide");
+const guideDialog = document.getElementById("guide-dialog");
+const closeGuide = document.getElementById("close-guide");
 document.getElementById("why").textContent = text.why;
 
 const glyphs = { working: "…", passed: "✔", failed: "✖", instruction: "➜", info: "•" };
@@ -21,6 +24,22 @@ fixButton.addEventListener("click", () => runFix());
 copyButton.addEventListener("click", () => navigator.clipboard.writeText(results.innerText));
 aboutButton.addEventListener("click", () => aboutDialog.showModal());
 closeAbout.addEventListener("click", () => aboutDialog.close());
+guideButton.addEventListener("click", () => openGuide());
+closeGuide.addEventListener("click", () => guideDialog.close());
+
+function openGuide() {
+  guideDialog.showModal();
+  guideDialog.scrollTop = 0;
+}
+
+function offerGuide(body) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "show-how";
+  button.textContent = "Show me how to turn on USB debugging";
+  button.addEventListener("click", () => openGuide());
+  body.append(document.createElement("br"), button);
+}
 
 function report(kind, message, detail) {
   const line = document.createElement("div");
@@ -91,7 +110,7 @@ async function connectHeadset() {
   const device = await pickDevice(manager);
   if (!device) {
     report("instruction", text.noDevicePicked);
-    report("info", text.debuggingOffHint);
+    offerGuide(report("info", text.debuggingOffHint));
     return undefined;
   }
   console.log("picked", describeDevice(device));
