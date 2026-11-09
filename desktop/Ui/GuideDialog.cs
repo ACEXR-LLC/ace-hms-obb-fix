@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 
@@ -10,9 +9,6 @@ namespace AceHeadsetFix.Ui;
 /// </summary>
 public sealed class GuideDialog : Form
 {
-    const string ArborGuideUrl = "https://help.arborxr.com/en/articles/10769343-enable-usb-debugging-on-horizon-managed-services-devices";
-    const string ManageXrGuideUrl = "https://help.managexr.com/en/articles/13006370-how-to-enable-usb-debugging-on-a-mhms-shared-mode-device";
-
     readonly Panel _scroller;
     readonly RoundedButton _close;
 
@@ -82,8 +78,8 @@ public sealed class GuideDialog : Form
 
     Label BuildIntro() => new()
     {
-        Text = "Takes about a minute. You do this in the headset, so put it on. The headset forgets this setting every time it restarts, " +
-               "so if the app can't find your headset later, check it again.",
+        Text = "This takes about a minute and is done in the headset, so put it on. The headset turns this setting off again when it " +
+               "restarts, so repeat these steps if this app cannot find your headset later.",
         ForeColor = Theme.Info,
         AutoSize = true,
         Dock = DockStyle.Fill,
@@ -118,8 +114,6 @@ public sealed class GuideDialog : Form
             steps.Controls.Add(BuildStepBody(step), 1, row);
         }
 
-        steps.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        steps.Controls.Add(BuildCredit(), 1, steps.RowStyles.Count - 1);
         return steps;
     }
 
@@ -197,26 +191,6 @@ public sealed class GuideDialog : Form
         return body;
     }
 
-    Control BuildCredit()
-    {
-        var credit = new LinkLabel
-        {
-            Text = "Screenshot courtesy of ArborXR's guide. The steps follow ManageXR's guide for shared-mode headsets.",
-            ForeColor = Theme.MutedText,
-            LinkColor = Theme.Link,
-            ActiveLinkColor = Theme.AccentHover,
-            LinkBehavior = LinkBehavior.HoverUnderline,
-            AutoSize = true,
-            Dock = DockStyle.Fill,
-            TabStop = false,
-            Margin = new Padding(0, Scaled(4), 0, Scaled(8)),
-        };
-        credit.Links.Add(credit.Text.IndexOf("ArborXR's guide", StringComparison.Ordinal), "ArborXR's guide".Length, ArborGuideUrl);
-        credit.Links.Add(credit.Text.IndexOf("ManageXR's guide", StringComparison.Ordinal), "ManageXR's guide".Length, ManageXrGuideUrl);
-        credit.LinkClicked += (_, e) => OpenExternally(e.Link?.LinkData as string);
-        return credit;
-    }
-
     RoundedButton BuildCloseButton()
     {
         var close = new RoundedButton
@@ -241,7 +215,7 @@ public sealed class GuideDialog : Form
     {
         var path = new Label
         {
-            Text = "Settings > Developer > USB Debugging",
+            Text = "Headset path: Settings > Developer > USB Debugging",
             ForeColor = Theme.MutedText,
             AutoSize = true,
             Anchor = AnchorStyles.Left,
@@ -268,19 +242,6 @@ public sealed class GuideDialog : Form
         }
     }
 
-    static void OpenExternally(string? target)
-    {
-        if (string.IsNullOrEmpty(target))
-            return;
-        try
-        {
-            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
-        }
-        catch
-        {
-        }
-    }
-
     sealed class StepBadge : Control
     {
         public StepBadge()
@@ -303,20 +264,16 @@ public sealed class GuideDialog : Form
 
     static readonly Step[] Steps =
     [
-        new("Open the Meta menu",
-            "Press the Meta button on the right controller (the flat oval button) to open the menu."),
         new("Open Settings",
-            "Select the three dots (⋮) on the toolbar, then Settings in the top-right corner. " +
-            "On some headsets the toolbar shows a gear icon labelled Settings instead; select that."),
-        new("Go to Developer",
-            "In the list on the left side of the Settings window, scroll down and select Developer."),
-        new("Switch USB Debugging on",
-            "Turn the USB Debugging switch on. It turns green when it is on. You can also get there from the quick settings panel " +
-            "(the Wi-Fi and battery icons in the bottom-left of the menu), which has a USB debugging tile."),
-        new("Plug in and allow the computer",
-            "Plug the headset into this computer with a USB cable, then click \"Check and fix my headset\". The headset shows " +
-            "\"Allow USB debugging?\" Tick \"Always allow from this computer\" and select Allow. This box only appears while you are wearing the headset.",
+            "Press the Meta button on your controller, then select Settings."),
+        new("Select Developer",
+            "In the menu on the left, scroll down and select Developer."),
+        new("Turn on USB Debugging",
+            "Turn on the USB Debugging switch."),
+        new("Connect the headset",
+            "Plug the headset into this computer with a USB cable, then click \"Check and fix my headset\" in this app. " +
+            "When the headset asks \"Allow USB debugging?\", select \"Always allow from this computer\", then Allow.",
             "guide.allow-usb-debugging.jpg",
-            "Tick \"Always allow from this computer\", then \"Allow\"."),
+            "Select \"Always allow from this computer\", then \"Allow\". This message only appears while the headset is worn."),
     ];
 }

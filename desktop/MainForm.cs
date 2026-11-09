@@ -253,9 +253,20 @@ public sealed class MainForm : Form
             Margin = new Padding(Scaled(12), 0, 0, 0),
         };
         guideButton.Click += (_, _) => ShowGuide();
+        var supportLink = new LinkLabel
+        {
+            Text = "Contact Ace support",
+            AutoSize = true,
+            LinkColor = Theme.Link,
+            ActiveLinkColor = Theme.AccentHover,
+            LinkBehavior = LinkBehavior.HoverUnderline,
+            Margin = new Padding(Scaled(18), Scaled(9), 0, 0),
+        };
+        supportLink.LinkClicked += (_, _) => OpenExternally(Explanations.SupportUrl);
         var left = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, Margin = new Padding(0), Anchor = AnchorStyles.Left };
         left.Controls.Add(copyButton);
         left.Controls.Add(guideButton);
+        left.Controls.Add(supportLink);
         left.Controls.Add(_logLink);
         var footer = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, ColumnCount = 2 };
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));

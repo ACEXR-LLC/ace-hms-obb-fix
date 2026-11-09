@@ -21,7 +21,7 @@ export async function openAdbConnection(usbDevice, events = {}) {
   }
   const target = findAdbInterface(usbDevice);
   if (!target) {
-    throw new Error("This device has no ADB interface. USB debugging is probably off.");
+    throw new Error("USB debugging appears to be turned off on the headset.");
   }
   try {
     await usbDevice.claimInterface(target.usbInterface.interfaceNumber);

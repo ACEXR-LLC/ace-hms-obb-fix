@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121418">
   <title>Ace Headset Fix</title>
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,90 +15,93 @@
       <h1>Headset Fix</h1>
     </header>
     <p class="intro">
-      Use this when Ace stays stuck on Meta's three loading dots after Device Manager installed it.
-      Plug the headset into this computer with a USB cable, make sure the headset is switched on, then click the button
-      and pick the headset in the list that pops up. If the headset needs something from you, instructions appear below.
+      Use this page if Ace stays stuck on Meta's loading screen (three dots) after Meta Device Manager installed it on the headset.
+      Plug the headset into this computer with a USB cable and make sure it is switched on. Click the button below, then choose
+      the headset in the list that appears. If anything else is needed, instructions appear below the button.
+    </p>
+    <p class="note">
+      Meta is aware of this issue and is working on a fix. Until then, this page resolves it in about two minutes and changes
+      nothing else on the headset.
     </p>
     <p class="before">
-      <strong>Before you start:</strong> USB debugging has to be switched on in the headset.
+      <span><strong>Before you start:</strong> USB debugging must be turned on in the headset.</span>
       <button id="guide" class="secondary inline" type="button">How to turn on USB debugging</button>
     </p>
     <button id="fix" class="primary" type="button">Connect and fix my headset</button>
-    <section id="results" class="card results" aria-live="polite">
-      <p class="placeholder">Results will appear here.</p>
+    <section id="results" class="card results" aria-live="polite" aria-label="Progress and results">
+      <p class="placeholder">Progress and results will appear here.</p>
     </section>
     <footer>
-      <button id="copy" class="secondary" type="button">Copy results</button>
-      <a class="app-link" href="AceHeadsetFix.exe" download>Having trouble? Download the Windows app</a>
+      <button id="copy" class="secondary" type="button" disabled>Copy results</button>
+      <span class="links">
+        <a class="footer-link" href="https://www.acexr.com/support/contact" target="_blank" rel="noopener">Contact Ace support</a>
+        <span class="divider" aria-hidden="true">·</span>
+        <a class="footer-link" href="AceHeadsetFix.exe" download>Download the Windows app</a>
+      </span>
       <span class="spacer"></span>
       <button id="about" class="secondary" type="button">About</button>
     </footer>
   </main>
 
-  <dialog id="guide-dialog" class="guide">
-    <h2>How to turn on USB debugging</h2>
+  <dialog id="guide-dialog" class="guide" aria-labelledby="guide-title">
+    <div class="dialog-header">
+      <h2 id="guide-title">How to turn on USB debugging</h2>
+      <button class="dialog-close" type="button" data-close aria-label="Close">×</button>
+    </div>
     <p>
-      Takes about a minute. You do this in the headset, so put it on. The headset forgets this setting every time it
-      restarts, so if the page can't find your headset later, check it again.
+      This takes about a minute and is done in the headset, so put it on. The headset turns this setting off again when it
+      restarts, so repeat these steps if this page cannot find your headset later.
     </p>
     <ol class="steps">
       <li>
-        <h3>Open the Meta menu</h3>
-        <p>Press the <strong>Meta button</strong> on the right controller (the flat oval button) to open the menu.</p>
-      </li>
-      <li>
         <h3>Open Settings</h3>
-        <p>
-          Select the <strong>three dots (⋮)</strong> on the toolbar, then <strong>Settings</strong> in the top-right corner.
-          On some headsets the toolbar shows a gear icon labelled Settings instead; select that.
-        </p>
+        <p>Press the Meta button on your controller, then select <strong>Settings</strong>.</p>
       </li>
       <li>
-        <h3>Go to Developer</h3>
-        <p>In the list on the left side of the Settings window, scroll down and select <strong>Developer</strong>.</p>
+        <h3>Select Developer</h3>
+        <p>In the menu on the left, scroll down and select <strong>Developer</strong>.</p>
       </li>
       <li>
-        <h3>Switch USB Debugging on</h3>
-        <p>
-          Turn the <strong>USB Debugging</strong> switch on. It turns green when it is on.
-          You can also get there from the quick settings panel (the Wi-Fi and battery icons in the bottom-left of the
-          menu), which has a <strong>USB debugging</strong> tile.
-        </p>
+        <h3>Turn on USB Debugging</h3>
+        <p>Turn on the <strong>USB Debugging</strong> switch.</p>
       </li>
       <li>
-        <h3>Plug in and allow the computer</h3>
+        <h3>Connect the headset</h3>
         <p>
           Plug the headset into this computer with a USB cable, then click <strong>Connect and fix my headset</strong> on this page.
-          The headset shows <strong>Allow USB debugging?</strong> Tick <strong>Always allow from this computer</strong> and select <strong>Allow</strong>.
-          This box only appears while you are wearing the headset.
+          When the headset asks <strong>Allow USB debugging?</strong>, select <strong>Always allow from this computer</strong>, then <strong>Allow</strong>.
         </p>
         <figure>
-          <img src="guide/allow-usb-debugging.jpg" alt="The headset's Allow USB debugging? box with Cancel, Always allow from this computer, and Allow buttons" loading="lazy">
-          <figcaption>Tick "Always allow from this computer", then "Allow".</figcaption>
+          <img src="guide/allow-usb-debugging.jpg" alt="The headset's Allow USB debugging? message with Cancel, Always allow from this computer, and Allow buttons" loading="lazy">
+          <figcaption>Select "Always allow from this computer", then "Allow". This message only appears while the headset is worn.</figcaption>
         </figure>
       </li>
     </ol>
-    <p class="credit">
-      Screenshot courtesy of <a href="https://help.arborxr.com/en/articles/10769343-enable-usb-debugging-on-horizon-managed-services-devices" target="_blank" rel="noopener">ArborXR's guide</a>.
-      The steps follow <a href="https://help.managexr.com/en/articles/13006370-how-to-enable-usb-debugging-on-a-mhms-shared-mode-device" target="_blank" rel="noopener">ManageXR's guide</a> for shared-mode headsets.
-    </p>
     <footer>
-      <span class="version">Settings &gt; Developer &gt; USB Debugging</span>
-      <button id="close-guide" class="secondary" type="button">Close</button>
+      <span class="version">Headset path: Settings &gt; Developer &gt; USB Debugging</span>
+      <button class="secondary" type="button" data-close>Close</button>
     </footer>
   </dialog>
 
-  <dialog id="about-dialog">
-    <h2>Why does this happen?</h2>
+  <dialog id="about-dialog" aria-labelledby="about-title">
+    <div class="dialog-header">
+      <h2 id="about-title">Why does this happen?</h2>
+      <button class="dialog-close" type="button" data-close aria-label="Close">×</button>
+    </div>
     <p id="why"></p>
-    <h2>Prefer an app?</h2>
+    <h2>Need help?</h2>
     <p>
-      <a href="AceHeadsetFix.exe" download>Download the Windows app</a> (about 65 MB). It does the same fix without a browser.
-      Windows shows "Windows protected your PC" the first time; click <strong>More info</strong>, then <strong>Run anyway</strong>.
+      <a href="https://www.acexr.com/support/contact" target="_blank" rel="noopener">Contact Ace support</a> and include the text from
+      <strong>Copy results</strong>. An Ace team member will get back to you.
+    </p>
+    <h2>Prefer a Windows app?</h2>
+    <p>
+      <a href="AceHeadsetFix.exe" download>Download the Windows app</a> (about 65 MB). It performs the same fix without a browser.
+      The first time you open it, Windows may show "Windows protected your PC". Click <strong>More info</strong>, then <strong>Run anyway</strong>.
     </p>
     <footer>
-      <span class="version">Ace Headset Fix (web) 1.1.0</span>
-      <button id="close-about" class="secondary" type="button">Close</button>
+      <span class="version">Ace Headset Fix for web, version 1.2.0</span>
+      <button class="secondary" type="button" data-close>Close</button>
     </footer>
   </dialog>
 

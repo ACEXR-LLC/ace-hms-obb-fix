@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --background: #121418;
   --card: #1b1e25;
   --card-border: #2a2e38;
@@ -33,7 +34,7 @@ body {
 }
 
 main {
-  max-width: 860px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 28px 24px 32px;
 }
@@ -56,8 +57,19 @@ header h1 {
 }
 
 .intro {
+  color: var(--info);
+  margin: 0 0 12px;
+}
+
+.note {
   color: var(--muted);
-  margin: 0 0 18px;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
 }
 
 .primary {
@@ -69,8 +81,9 @@ header h1 {
   background: var(--accent);
   color: var(--text);
   font: inherit;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
+  color: #fff;
   cursor: pointer;
   transition: background 120ms;
 }
@@ -167,9 +180,21 @@ a {
 
 footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 10px 16px;
   margin-top: 18px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.divider {
+  color: var(--muted);
 }
 
 .secondary {
@@ -186,17 +211,25 @@ footer {
   background: var(--secondary-hover);
 }
 
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.secondary:disabled:hover {
+  background: var(--secondary);
+}
+
 .spacer {
   flex: 1;
 }
 
-.app-link {
+.footer-link {
   color: var(--link);
   text-decoration: none;
-  white-space: nowrap;
 }
 
-.app-link:hover {
+.footer-link:hover {
   text-decoration: underline;
 }
 
@@ -218,8 +251,35 @@ dialog h2 {
   font-size: 20px;
 }
 
-dialog h2:first-child {
-  margin-top: 0;
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-header h2 {
+  margin: 0 0 10px;
+}
+
+.dialog-close {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  margin: -6px -8px 0 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dialog-close:hover {
+  background: var(--secondary-hover);
+  color: var(--text);
 }
 
 dialog p {
@@ -249,20 +309,7 @@ dialog footer {
 }
 
 .show-how {
-  margin-top: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--link);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--link);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.show-how:hover {
-  background: rgba(90, 176, 255, 0.12);
+  margin-top: 8px;
 }
 
 dialog.guide {
@@ -298,8 +345,8 @@ dialog.guide > p:first-of-type {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--text);
+  background: var(--accent-pressed);
+  color: #fff;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -333,11 +380,6 @@ dialog.guide > p:first-of-type {
   font-size: 14px;
 }
 
-.credit {
-  color: var(--muted);
-  font-size: 14px;
-}
-
 @media (max-width: 600px) {
   dialog {
     padding: 18px 16px;
@@ -345,5 +387,21 @@ dialog.guide > p:first-of-type {
 
   .steps li {
     padding-left: 38px;
+  }
+
+  .results {
+    max-height: none;
+  }
+
+  .before .secondary.inline {
+    width: 100%;
+  }
+
+  footer .spacer {
+    display: none;
+  }
+
+  footer {
+    justify-content: space-between;
   }
 }

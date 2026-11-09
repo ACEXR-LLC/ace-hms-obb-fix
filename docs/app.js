@@ -10,10 +10,8 @@ const results = document.getElementById("results");
 const copyButton = document.getElementById("copy");
 const aboutButton = document.getElementById("about");
 const aboutDialog = document.getElementById("about-dialog");
-const closeAbout = document.getElementById("close-about");
 const guideButton = document.getElementById("guide");
 const guideDialog = document.getElementById("guide-dialog");
-const closeGuide = document.getElementById("close-guide");
 document.getElementById("why").textContent = text.why;
 
 const glyphs = { working: "…", passed: "✔", failed: "✖", instruction: "➜", info: "•" };
@@ -21,24 +19,52 @@ const credentialStore = new AdbWebCredentialStore("Ace Headset Fix");
 let running = false;
 
 fixButton.addEventListener("click", () => runFix());
-copyButton.addEventListener("click", () => navigator.clipboard.writeText(results.innerText));
-aboutButton.addEventListener("click", () => aboutDialog.showModal());
-closeAbout.addEventListener("click", () => aboutDialog.close());
-guideButton.addEventListener("click", () => openGuide());
-closeGuide.addEventListener("click", () => guideDialog.close());
+copyButton.addEventListener("click", () => copyResults());
+aboutButton.addEventListener("click", () => openDialog(aboutDialog));
+guideButton.addEventListener("click", () => openDialog(guideDialog));
+for (const dialog of [guideDialog, aboutDialog]) {
+  for (const close of dialog.querySelectorAll("[data-close]")) {
+    close.addEventListener("click", () => dialog.close());
+  }
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) {
+      dialog.close();
+    }
+  });
+}
 
-function openGuide() {
-  guideDialog.showModal();
-  guideDialog.scrollTop = 0;
+function openDialog(dialog) {
+  dialog.showModal();
+  dialog.scrollTop = 0;
 }
 
 function offerGuide(body) {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "show-how";
-  button.textContent = "Show me how to turn on USB debugging";
-  button.addEventListener("click", () => openGuide());
+  button.className = "secondary inline show-how";
+  button.textContent = "How to turn on USB debugging";
+  button.addEventListener("click", () => openDialog(guideDialog));
   body.append(document.createElement("br"), button);
+}
+
+async function copyResults() {
+  const lines = [...results.querySelectorAll(".line, .summary")].map((line) => {
+    if (line.classList.contains("summary")) {
+      return `\n${line.textContent}`;
+    }
+    const glyph = line.querySelector(".glyph")?.textContent ?? "";
+    const body = line.querySelector(".body");
+    const detail = body?.querySelector(".detail");
+    const message = detail ? body.textContent.slice(0, body.textContent.length - detail.textContent.length) : body?.textContent ?? "";
+    return detail ? `${glyph} ${message}\n    ${detail.textContent.replace(/\n/g, "\n    ")}` : `${glyph} ${message}`;
+  });
+  try {
+    await navigator.clipboard.writeText(`Ace Headset Fix results\n${lines.join("\n")}\n`);
+    copyButton.textContent = "Copied";
+  } catch {
+    copyButton.textContent = "Could not copy";
+  }
+  setTimeout(() => { copyButton.textContent = "Copy results"; }, 1500);
 }
 
 function report(kind, message, detail) {
@@ -46,8 +72,10 @@ function report(kind, message, detail) {
   line.className = `line ${kind}`;
   const glyph = document.createElement("span");
   glyph.className = "glyph";
+  glyph.setAttribute("aria-hidden", "true");
   glyph.textContent = glyphs[kind];
   const body = document.createElement("span");
+  body.className = "body";
   body.textContent = message;
   if (detail) {
     const detailElement = document.createElement("span");
@@ -75,6 +103,7 @@ async function runFix() {
   }
   running = true;
   fixButton.disabled = true;
+  copyButton.disabled = false;
   results.replaceChildren();
   const summary = { fixed: 0, alreadyFine: 0, problems: 0 };
   let adb;
@@ -87,7 +116,7 @@ async function runFix() {
     }
   } catch (error) {
     console.error(error);
-    report("failed", `Something unexpected went wrong: ${error?.message ?? error}`, text.unexpectedAdvice);
+    report("failed", "Something unexpected happened.", `${text.unexpectedAdvice}\n${error?.message ?? error}`);
     summary.problems++;
   } finally {
     await closeQuietly(adb);
@@ -104,9 +133,9 @@ async function connectHeadset() {
     report("failed", text.browserUnsupported);
     return undefined;
   }
-  report("passed", "This browser can talk to the headset.");
+  report("passed", "This browser can connect to the headset.");
 
-  report("working", "Asking you to pick the headset…");
+  report("working", "Choose the headset in the list…");
   const device = await pickDevice(manager);
   if (!device) {
     report("instruction", text.noDevicePicked);
@@ -201,10 +230,10 @@ async function fixHeadset(adb, summary) {
   const content = await inspectContent(shell, pkg);
   if (content.state === "not-downloaded") {
     console.log(describeEntries(pkg, content.entries));
-    report("info", "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…");
+    report("info", "No content file for this version of Ace was found. Starting Ace to check whether it needs one…");
     const launch = await launchAndWatch(shell);
     if (launch.outcome === "reached-vr") {
-      report("passed", "Ace started and reached VR without a separate content file. Nothing to fix on this headset.");
+      report("passed", "Ace started and is running without a separate content file. Nothing to fix on this headset.");
       summary.alreadyFine++;
       return;
     }
@@ -224,7 +253,7 @@ async function fixHeadset(adb, summary) {
   report("info", text.foundTheProblem);
   const repair = await repairContentFile(shell, file, report);
   if (!repair.succeeded) {
-    report("failed", repair.message);
+    report("failed", repair.message, repair.detail);
     summary.problems++;
     return;
   }
@@ -234,10 +263,10 @@ async function fixHeadset(adb, summary) {
 }
 
 async function confirmLaunch(shell, summary, fixedJustNow) {
-  report("working", "Starting Ace on the headset to confirm it works…");
+  report("working", "Starting Ace on the headset to confirm the fix…");
   const launch = await launchAndWatch(shell);
   if (launch.outcome === "reached-vr") {
-    report("passed", "Ace started and reached VR. It is open on the headset now.");
+    report("passed", "Ace started and is open on the headset now.");
   } else if (launch.outcome === "content-unreadable") {
     report("failed", text.launchStillBroken);
     summary.problems++;

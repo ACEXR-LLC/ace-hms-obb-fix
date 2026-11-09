@@ -13,7 +13,8 @@ It talks to the headset over WebUSB using [Tango](https://tangoadb.dev), a TypeS
 - `usbConnection.js` — the USB transport: a buffered adb packet reader and writer over WebUSB. Tango's own WebUSB connection keeps a read only when it is exactly a 24-byte header, but the Quest returns the header and its payload in one read, so Tango never sees the headset's first reply. This transport buffers, drops leftover packets from an earlier session, and feeds Tango's `AdbDaemonTransport.authenticate`.
 - `headset.js` — the diagnosis and repair logic, a line-for-line port of the desktop app's `HeadsetFixer.cs`, `Headset/ObbRepair.cs` and `Headset/LaunchVerifier.cs`
 - `text.js` — every sentence shown to the user
-- `guide/` — the reference picture in the "How to turn on USB debugging" guide (the headset's "Allow USB debugging?" box), cropped from [ArborXR's guide](https://help.arborxr.com/en/articles/10769343-enable-usb-debugging-on-horizon-managed-services-devices) and credited in the dialog. The step text follows [ManageXR's shared-mode guide](https://help.managexr.com/en/articles/13006370-how-to-enable-usb-debugging-on-a-mhms-shared-mode-device). The same picture is embedded in the Windows app from `../desktop/Assets/guide`.
+- `guide/` — the reference picture in the "How to turn on USB debugging" guide (the headset's "Allow USB debugging?" message), cropped from [ArborXR's guide](https://help.arborxr.com/en/articles/10769343-enable-usb-debugging-on-horizon-managed-services-devices). The same picture is embedded in the Windows app from `../desktop/Assets/guide`.
+- `favicon.ico` — the app icon, reused from `../desktop/AceHeadsetFix.ico`
 - `logo-white.png` — the Ace wordmark
 
 Tango is loaded from esm.sh at pinned versions (`@yume-chan/adb@2.6.4`, `@yume-chan/adb-daemon-webusb@2.3.2`, `@yume-chan/adb-credential-web@2.1.0`). There is no build step.
@@ -35,7 +36,7 @@ python -m http.server 8765 --bind 127.0.0.1
 3. Plugs the headset into the computer and clicks the button.
 4. Picks the Quest in the browser's USB device list.
 5. Puts the headset on if it asks "Allow USB debugging?", ticks "Always allow from this computer" and taps Allow.
-6. Reads the results. After a fix the page starts Ace and reads the headset log to confirm it reached VR.
+6. Reads the results. After a fix the page starts Ace and reads the headset log to confirm it reached VR. If something still needs attention, "Copy results" and the "Contact Ace support" link (https://www.acexr.com/support/contact) are in the footer.
 
 ## Known limits
 

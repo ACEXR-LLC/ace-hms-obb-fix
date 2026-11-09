@@ -54,12 +54,12 @@ public sealed class HeadsetFixer
 
     async Task<string> EnsureAdbAsync()
     {
-        Report(StepOutcome.Working, "Checking this computer has the Android tool (adb)…");
+        Report(StepOutcome.Working, "Checking that this computer has the helper it needs to talk to the headset…");
         var existing = AdbLocator.Find(_appDataDirectory);
         if (existing is not null)
         {
             _log.Write("adb at " + existing);
-            Report(StepOutcome.Passed, "Android tool found.");
+            Report(StepOutcome.Passed, "Helper found.");
             return existing;
         }
         Report(StepOutcome.Info, Explanations.DownloadingAdb);
@@ -67,7 +67,7 @@ public sealed class HeadsetFixer
             .InstallAsync(percent => Report(StepOutcome.Working, $"Downloading… {percent}%"), _cancellation)
             .ConfigureAwait(false);
         _log.Write("adb installed at " + installed);
-        Report(StepOutcome.Passed, "Android tool installed.");
+        Report(StepOutcome.Passed, "Helper installed.");
         return installed;
     }
 
@@ -173,11 +173,11 @@ public sealed class HeadsetFixer
     async Task HandleMissingContentFileAsync(AdbRunner adb, AdbDevice headset, AcePackageInfo package, ContentFileReport content, FixSummary summary)
     {
         _log.Write(DescribeEntries(package, content.Entries));
-        Report(StepOutcome.Info, "No content file for this version of Ace is on the headset. Starting Ace to see whether it needs one…");
+        Report(StepOutcome.Info, "No content file for this version of Ace was found. Starting Ace to check whether it needs one…");
         var launch = await new LaunchVerifier(adb).LaunchAndWatchAsync(headset.Serial).ConfigureAwait(false);
         if (launch.Outcome == LaunchOutcome.ReachedVr)
         {
-            Report(StepOutcome.Passed, "Ace started and reached VR without a separate content file. Nothing to fix on this headset.");
+            Report(StepOutcome.Passed, "Ace started and is running without a separate content file. Nothing to fix on this headset.");
             summary.AlreadyFine++;
             return;
         }
@@ -187,12 +187,12 @@ public sealed class HeadsetFixer
 
     async Task ConfirmLaunchAsync(AdbRunner adb, AdbDevice headset, FixSummary summary, bool fixedJustNow)
     {
-        Report(StepOutcome.Working, "Starting Ace on the headset to confirm it works…");
+        Report(StepOutcome.Working, "Starting Ace on the headset to confirm the fix…");
         var launch = await new LaunchVerifier(adb).LaunchAndWatchAsync(headset.Serial).ConfigureAwait(false);
         switch (launch.Outcome)
         {
             case LaunchOutcome.ReachedVr:
-                Report(StepOutcome.Passed, "Ace started and reached VR. It is open on the headset now.");
+                Report(StepOutcome.Passed, "Ace started and is open on the headset now.");
                 if (fixedJustNow)
                     summary.Fixed++;
                 else
