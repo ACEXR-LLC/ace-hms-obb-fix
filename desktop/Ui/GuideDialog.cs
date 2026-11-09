@@ -201,7 +201,7 @@ public sealed class GuideDialog : Form
     {
         var credit = new LinkLabel
         {
-            Text = "Screenshots courtesy of ArborXR's guide. The steps follow ManageXR's guide for shared-mode headsets.",
+            Text = "Screenshot courtesy of ArborXR's guide. The steps follow ManageXR's guide for shared-mode headsets.",
             ForeColor = Theme.MutedText,
             LinkColor = Theme.Link,
             ActiveLinkColor = Theme.AccentHover,
@@ -312,9 +312,7 @@ public sealed class GuideDialog : Form
             "In the list on the left side of the Settings window, scroll down and select Developer."),
         new("Switch USB Debugging on",
             "Turn the USB Debugging switch on. It turns green when it is on. You can also get there from the quick settings panel " +
-            "(the Wi-Fi and battery icons in the bottom-left of the menu), which has a USB debugging tile.",
-            "guide.quick-settings-usb-debugging.jpg",
-            "The quick settings panel. The USB debugging tile is in the bottom-left."),
+            "(the Wi-Fi and battery icons in the bottom-left of the menu), which has a USB debugging tile."),
         new("Plug in and allow the computer",
             "Plug the headset into this computer with a USB cable, then click \"Check and fix my headset\". The headset shows " +
             "\"Allow USB debugging?\" Tick \"Always allow from this computer\" and select Allow. This box only appears while you are wearing the headset.",

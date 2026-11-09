@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\logo-white.png" LogicalName="logo-white.png" />
-    <EmbeddedResource Include="Assets\guide\quick-settings-usb-debugging.jpg" LogicalName="guide.quick-settings-usb-debugging.jpg" />
     <EmbeddedResource Include="Assets\guide\allow-usb-debugging.jpg" LogicalName="guide.allow-usb-debugging.jpg" />
   </ItemGroup>
 
