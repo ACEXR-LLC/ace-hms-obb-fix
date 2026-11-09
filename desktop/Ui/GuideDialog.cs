@@ -274,6 +274,6 @@ public sealed class GuideDialog : Form
             "Plug the headset into this computer with a USB cable, then click \"Check and fix my headset\" in this app. " +
             "When the headset asks \"Allow USB debugging?\", select \"Always allow from this computer\", then Allow.",
             "guide.allow-usb-debugging.jpg",
-            "Select \"Always allow from this computer\", then \"Allow\". This message only appears while the headset is worn."),
+            "Select \"Always allow from this computer\", then \"Allow\". The message in your headset may look slightly different, and it only appears while the headset is worn."),
     ];
 }

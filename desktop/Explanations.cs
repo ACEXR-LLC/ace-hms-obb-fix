@@ -6,9 +6,15 @@ public static class Explanations
     public const string SupportUrl = "https://www.acexr.com/support/contact";
 
     public const string Intro =
-        "Use this tool if Ace stays stuck on Meta's loading screen (three dots) after Meta Device Manager installed it on the headset. " +
-        "Plug the headset into this computer with a USB cable and make sure it is switched on, then click the button. " +
-        "If anything else is needed, instructions appear below the button.";
+        "Select Ace customers have reported an issue related to accessing the Ace app after the latest Meta system update was installed " +
+        "on their headsets. This issue may be the culprit if an enterprise Ace Virtual Shooting end user is seemingly caught in an endless " +
+        "loading state after opening the Ace Virtual Shooting VR app on the Meta Quest.\n\n" +
+        "Meta is aware of this issue and is working on a fix. Until then, connecting the impacted headset(s) to your computer and following " +
+        "the instructions in this app will resolve the issue. The entire process should take about two minutes.\n\n" +
+        "1. Turn on USB debugging in the headset (see \"How to turn on USB debugging\" below).\n" +
+        "2. Plug the headset into this computer with a USB cable and make sure it is switched on.\n" +
+        "3. Click the button below.\n" +
+        "4. If anything else is needed, additional instructions will appear below the button.";
 
     public const string Why =
         "When Meta Device Manager installs Ace on a shared headset, it downloads Ace's content file (about 2.8 GB) correctly " +

@@ -15,18 +15,25 @@
       <h1>Headset Fix</h1>
     </header>
     <p class="intro">
-      Use this page if Ace stays stuck on Meta's loading screen (three dots) after Meta Device Manager installed it on the headset.
-      Plug the headset into this computer with a USB cable and make sure it is switched on. Click the button below, then choose
-      the headset in the list that appears. If anything else is needed, instructions appear below the button.
+      Select Ace customers have reported an issue related to accessing the Ace app after the latest Meta system update was
+      installed on their headsets. This issue may be the culprit if an enterprise Ace Virtual Shooting end user is seemingly
+      caught in an endless loading state after opening the Ace Virtual Shooting VR app on the Meta Quest.
     </p>
-    <p class="note">
-      Meta is aware of this issue and is working on a fix. Until then, this page resolves it in about two minutes and changes
-      nothing else on the headset.
+    <p class="intro">
+      Meta is aware of this issue and is working on a fix. Until then, connecting the impacted headset(s) to your computer and
+      following the instructions on this page will resolve the issue. The entire process should take about two minutes.
     </p>
-    <p class="before">
-      <span><strong>Before you start:</strong> USB debugging must be turned on in the headset.</span>
-      <button id="guide" class="secondary inline" type="button">How to turn on USB debugging</button>
-    </p>
+    <ol class="intro-steps">
+      <li>
+        <span class="step-row">
+          <span>Turn on USB debugging in the headset.</span>
+          <button id="guide" class="secondary inline" type="button">How to turn on USB debugging</button>
+        </span>
+      </li>
+      <li>Plug the headset into this computer with a USB cable and make sure it is switched on.</li>
+      <li>Click the button below, then choose the headset in the list that appears.</li>
+      <li>If anything else is needed, additional instructions will appear below the button.</li>
+    </ol>
     <button id="fix" class="primary" type="button">Connect and fix my headset</button>
     <section id="results" class="card results" aria-live="polite" aria-label="Progress and results">
       <p class="placeholder">Progress and results will appear here.</p>
@@ -73,7 +80,7 @@
         </p>
         <figure>
           <img src="guide/allow-usb-debugging.jpg" alt="The headset's Allow USB debugging? message with Cancel, Always allow from this computer, and Allow buttons" loading="lazy">
-          <figcaption>Select "Always allow from this computer", then "Allow". This message only appears while the headset is worn.</figcaption>
+          <figcaption>Select "Always allow from this computer", then "Allow". The message in your headset may look slightly different, and it only appears while the headset is worn.</figcaption>
         </figure>
       </li>
     </ol>

@@ -61,10 +61,19 @@ header h1 {
   margin: 0 0 12px;
 }
 
-.note {
-  color: var(--muted);
-  font-size: 14px;
-  margin: 0 0 16px;
+.intro-steps {
+  margin: 0 0 18px;
+  padding-left: 24px;
+  color: var(--info);
+}
+
+.intro-steps li {
+  margin: 4px 0;
+}
+
+.intro-steps .step-row .secondary.inline {
+  margin: 2px 0 2px 12px;
+  vertical-align: middle;
 }
 
 :focus-visible {
@@ -295,15 +304,6 @@ dialog footer {
   justify-content: space-between;
 }
 
-.before {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 12px;
-  margin: 0 0 14px;
-  color: var(--info);
-}
-
 .secondary.inline {
   padding: 7px 14px;
 }
@@ -391,10 +391,6 @@ dialog.guide > p:first-of-type {
 
   .results {
     max-height: none;
-  }
-
-  .before .secondary.inline {
-    width: 100%;
   }
 
   footer .spacer {
