@@ -15,6 +15,25 @@ const guideDialog = document.getElementById("guide-dialog");
 document.getElementById("why").textContent = text.why;
 
 const glyphs = { working: "…", passed: "✔", failed: "✖", instruction: "➜", info: "•" };
+// Opening the USB interface never involves the headset's "Allow USB debugging?" prompt (that comes later, during
+// authentication), so a limit here cannot cut off a user who is still putting the headset on.
+const CONNECT_TIMEOUT_MS = 45_000;
+
+class TimeoutError extends Error {
+  constructor(pending) {
+    super("Timed out");
+    this.name = "TimeoutError";
+    this.pending = pending;
+  }
+}
+
+function withTimeout(promise, milliseconds) {
+  let timer;
+  const expiry = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new TimeoutError(promise)), milliseconds);
+  });
+  return Promise.race([promise, expiry]).finally(() => clearTimeout(timer));
+}
 const credentialStore = new AdbWebCredentialStore("Ace Headset Fix");
 let running = false;
 
@@ -155,10 +174,13 @@ async function connectHeadset() {
   };
   let connection;
   try {
-    connection = await openAdbConnection(device.raw, events);
+    connection = await withTimeout(openAdbConnection(device.raw, events), CONNECT_TIMEOUT_MS);
     console.log("connected on", connection.description);
   } catch (error) {
-    if (error instanceof DeviceBusyError) {
+    if (error instanceof TimeoutError) {
+      report("failed", text.connectTimedOut, text.connectTimedOutAdvice);
+      error.pending.then((late) => late.close(), () => {});
+    } else if (error instanceof DeviceBusyError) {
       report("failed", text.deviceBusy);
     } else {
       report("failed", text.connectFailed, `${error?.name ?? ""} ${error?.message ?? error}`.trim());

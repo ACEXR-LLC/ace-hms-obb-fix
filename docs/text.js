@@ -28,6 +28,18 @@ export const text = {
     "Could not connect to the headset. Close Meta Quest Link and Meta Quest Developer Hub if they are open, then unplug and " +
     "reconnect the headset and try again. If it keeps failing, download the Windows app from the link below and use that instead.",
 
+  connectTimedOut:
+    "Windows did not give this page access to the headset within 45 seconds.",
+
+  connectTimedOutAdvice:
+    "The headset was found, so USB debugging and the cable are fine. This usually means another program on this computer is " +
+    "holding the headset, or security software on this computer is blocking access to it.\n" +
+    "1. Close Meta Quest Link, Meta Quest Developer Hub, SideQuest and Unity if any of them are open.\n" +
+    "2. Unplug the headset, wait five seconds, then plug it straight into the computer, not into a dock or hub.\n" +
+    "3. Reload this page and try again.\n" +
+    "If it still stops here, this computer is probably managed by your IT department and blocks the headset. Try another " +
+    "computer, or ask IT to allow the headset. Click Copy results and send them to Ace support if you need help.",
+
   allowPrompt:
     "The headset is asking for permission to connect to this computer. Put the headset on, check \"Always allow from this computer\", " +
     "then select Allow. Waiting for your answer…",
