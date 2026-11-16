@@ -29,7 +29,7 @@ export const text = {
     "reconnect the headset and try again. If it keeps failing, download the Windows app from the link below and use that instead.",
 
   connectTimedOut:
-    "Windows did not give this page access to the headset within 45 seconds.",
+    "Windows did not give this page access to the headset within 15 seconds.",
 
   connectTimedOutAdvice:
     "The headset was found, so USB debugging and the cable are fine. This usually means another program on this computer is " +

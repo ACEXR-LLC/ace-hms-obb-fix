@@ -17,7 +17,7 @@ document.getElementById("why").textContent = text.why;
 const glyphs = { working: "…", passed: "✔", failed: "✖", instruction: "➜", info: "•" };
 // Opening the USB interface never involves the headset's "Allow USB debugging?" prompt (that comes later, during
 // authentication), so a limit here cannot cut off a user who is still putting the headset on.
-const CONNECT_TIMEOUT_MS = 45_000;
+const CONNECT_TIMEOUT_MS = 15_000;
 
 class TimeoutError extends Error {
   constructor(pending) {
